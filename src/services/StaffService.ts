@@ -21,6 +21,10 @@ class StaffService {
   static async remove(id: string) {
     return StaffModel.deleteOne({ _id: id }).exec();
   }
+
+  static async findByPhoneNumber(phoneNumber: string) {
+    return StaffModel.findOne({ phoneNumber }).exec();
+  }
 }
 
 module.exports = StaffService;

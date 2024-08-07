@@ -47,6 +47,10 @@ const OrderSchema = mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    orderStatus: {
+      type: String,
+      enum: ["Pending", "Cancelled", "Overdue", "Complete"],
+    },
     deliveryDate: {
       type: Date,
     },
@@ -55,7 +59,7 @@ const OrderSchema = mongoose.Schema(
     payments: [PaymentSchema],
     paymentStatus: {
       type: String,
-      enum: ["Full", "Partial"],
+      enum: ["Full", "Partial", "None"],
     },
   },
   {

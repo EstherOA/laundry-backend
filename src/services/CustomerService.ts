@@ -21,6 +21,10 @@ class CustomerService {
   static async remove(id: string) {
     return CustomerModel.deleteOne({ _id: id }).exec();
   }
+
+  static async findByPhoneNumber(phoneNumber: string) {
+    return CustomerModel.findOne({ phoneNumber }).exec();
+  }
 }
 
 module.exports = CustomerService;
