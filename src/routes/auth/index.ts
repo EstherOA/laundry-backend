@@ -8,7 +8,7 @@ module.exports = (config: any) => {
 
   router.post(
     "/login",
-    passport.authenticate("local", { session: true }),
+    passport.authenticate("local", { session: false }),
     async (req: any, res: any) => {
       try {
         const token = jwt.sign(
@@ -20,8 +20,15 @@ module.exports = (config: any) => {
             expiresIn: "24h",
           }
         );
-        return res.json({ token });
-      } catch (err: any) {}
+        return res.status(200).json({
+          token,
+        });
+      } catch (err: any) {
+        console.error("error authenticating user:", err);
+        return res.status(400).json({
+          token: null,
+        });
+      }
     }
   );
 

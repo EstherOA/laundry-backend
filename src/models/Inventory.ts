@@ -8,8 +8,8 @@ const InventorySchema = mongoose.Schema(
     quantity: { type: Number, required: true },
     purchasedBy: { type: String, required: true },
     vendor: { type: String, required: true },
-    datePurchased: { type: String, required: true },
-    paymentMode: { type: String, required: true },
+    datePurchased: { type: Date, required: true },
+    paymentMode: { type: String, enum: ["Momo", "Cash"], required: true },
     paymentReceipt: { type: String, required: true },
     status: {
       type: String,

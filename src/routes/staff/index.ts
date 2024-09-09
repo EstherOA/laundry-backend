@@ -18,7 +18,10 @@ module.exports = () => {
   });
 
   router.post("/", async (req: any, res: any) => {
-    const employee = await StaffService.create(req.body);
+    const employee = await StaffService.create({
+      ...req.body,
+      dateCommenced: new Date(),
+    });
 
     return res.status(201).send(employee);
   });

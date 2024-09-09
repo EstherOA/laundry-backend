@@ -49,7 +49,7 @@ const OrderSchema = mongoose.Schema(
     },
     orderStatus: {
       type: String,
-      enum: ["Pending", "Cancelled", "Overdue", "Complete"],
+      enum: ["pending", "cancelled", "overdue", "complete", "almost-due"],
     },
     deliveryDate: {
       type: Date,

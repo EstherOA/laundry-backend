@@ -34,5 +34,11 @@ module.exports = () => {
 
     return res.status(200).send(updated);
   });
+
+  router.put("/:id/payments", async (req: any, res: any) => {
+    const updated = await OrderService.addPayment(req.params.id, req.body);
+
+    return res.status(200).send(updated);
+  });
   return router;
 };

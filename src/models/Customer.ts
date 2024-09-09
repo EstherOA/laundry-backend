@@ -11,8 +11,8 @@ const CustomerSchema = new mongoose.Schema(
       trim: true,
     },
     address: { type: String, required: true },
-    landmark: { type: String, required: true },
-    deliveryNotes: { type: String, required: true },
+    landmark: { type: String },
+    deliveryNotes: { type: String },
   },
   {
     timestamps: true,

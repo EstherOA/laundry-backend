@@ -4,9 +4,9 @@ const ServiceSchema = mongoose.Schema(
   {
     itemName: { type: String, required: true },
     serviceType: { type: String, required: true },
-    duration: { type: String, required: true },
+    duration: { type: Number, required: true },
     price: { type: Number, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     quantity: { type: Number, min: 1, default: 1 },
   },
   {

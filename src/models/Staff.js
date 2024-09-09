@@ -17,10 +17,10 @@ const StaffSchema = mongoose.Schema(
     role: { type: String, required: true },
     ssnit: { type: String, required: true },
     tin: { type: String, required: true },
-    dateCommenced: { type: String, required: true },
+    dateCommenced: { type: Date, required: true },
     salary: { type: Number, required: true },
     shift: { type: String, required: true },
-    contract: { type: String, required: true },
+    contract: { type: String },
   },
   {
     timestamps: true,

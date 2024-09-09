@@ -21,6 +21,19 @@ class OrderService {
   static async remove(id: string) {
     return OrderModel.deleteOne({ _id: id }).exec();
   }
+
+  static async addPayment(id: string, data: any) {
+    const order = OrderModel.findById(id).exec();
+
+    if (order) {
+      order.payments.push(data);
+    }
+    return order.save();
+  }
+
+  static async getStats() {
+    return;
+  }
 }
 
 module.exports = OrderService;

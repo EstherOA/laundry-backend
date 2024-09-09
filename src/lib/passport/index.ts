@@ -10,7 +10,8 @@ module.exports = (config: any) => {
   passport.use(
     new LocalStrategy(
       {
-        passReqToCallback: true,
+        usernameField: "phoneNumber",
+        passwordField: "password",
       },
       async (phoneNumber: any, password: any, done: any) => {
         try {
@@ -36,8 +37,10 @@ module.exports = (config: any) => {
         secretOrKey: config.JWT_SECRET,
       },
       async (jwtPayload: any, done: any) => {
+        console.log("jwt:", jwtPayload);
+
         try {
-          const user = await StaffService.findById(jwtPayload.userId);
+          const user = await StaffService.getOne(jwtPayload.userId);
           return done(null, user);
         } catch (error) {
           return done(error);
@@ -45,4 +48,17 @@ module.exports = (config: any) => {
       }
     )
   );
+  passport.serializeUser((staff: any, done: any) => {
+    done(null, staff.id);
+  });
+
+  passport.deserializeUser(async (id: any, done: any) => {
+    try {
+      const staff = await StaffService.getOne(id);
+      return done(null, staff);
+    } catch (err) {
+      return done(err);
+    }
+  });
+  return passport;
 };

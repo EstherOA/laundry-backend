@@ -4,9 +4,13 @@ const http = require("http");
 const mongoose = require("mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const config = require("./config");
-const app = express(config);
 const routeHandler = require("./routes");
+const setupPassport = require("./lib/passport");
+
+const app = express(config);
+const passport = setupPassport(config);
 
 const connectToMongoose = async () => {
   return mongoose.connect(config.mongodb.url);
@@ -16,6 +20,8 @@ const port = process.env.PORT || "3000";
 app.set("port", port);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(passport.initialize());
+app.use(cors({ origin: "*" }));
 app.use("/", routeHandler(config));
 
 const server = http.createServer(app);
