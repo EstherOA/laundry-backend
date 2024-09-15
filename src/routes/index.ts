@@ -43,7 +43,7 @@ module.exports = (config: any) => {
   );
   router.use(
     "/staff",
-    // passport.authenticate("jwt", { session: false }),
+    passport.authenticate("jwt", { session: false }),
     staffRouter(config)
   );
   router.use(
