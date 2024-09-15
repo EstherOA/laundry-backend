@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
-const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
+// Define constants for crypto
+const SALT_LENGTH = 16; // Length of the salt in bytes
+const ITERATIONS = 10000; // Number of iterations for PBKDF2
+const KEY_LENGTH = 64; // Length of the derived key (password hash) in bytes
+const DIGEST = "sha512"; // Hash function to use
 
 const StaffSchema = mongoose.Schema(
   {
@@ -29,10 +33,15 @@ const StaffSchema = mongoose.Schema(
 
 async function generateHash(password) {
   // Generate a salt
-  const salt = await bcrypt.genSalt(SALT_ROUNDS);
+  const salt = await crypto.randomBytes(SALT_LENGTH).toString("hex");
   // Hash the password using the generated salt
-  return await bcrypt.hash(password, salt);
-}
+  const hash = await new Promise((resolve, reject) => {
+    crypto.pbkdf2(password, salt, ITERATIONS, KEY_LENGTH, DIGEST, (err, derivedKey) => {
+      if (err) reject(err);
+      resolve(derivedKey.toString("hex"));
+    });
+  });
+  return `${salt}:${hash}`;}
 
 StaffSchema.pre("save", async function (next) {
   // Only hash the password if it has been modified (or is new)
@@ -50,7 +59,15 @@ StaffSchema.pre("save", async function (next) {
 StaffSchema.methods.comparePassword = async function comparePassword(
   candidatePassword
 ) {
-  return bcrypt.compare(candidatePassword, this.password);
+  const [salt, storedHash] = this.password.split(":"); // Split the stored password into salt and hash
+
+  const hash = await new Promise((resolve, reject) => {
+    crypto.pbkdf2(candidatePassword, salt, ITERATIONS, KEY_LENGTH, DIGEST, (err, derivedKey) => {
+      if (err) reject(err);
+      resolve(derivedKey.toString("hex"));
+    });
+  });
+  return storedHash === hash; // Compare the stored hash with the newly generated hash
 };
 
 module.exports = mongoose.model("Staff", StaffSchema, "staff");
