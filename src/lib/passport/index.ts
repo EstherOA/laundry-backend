@@ -37,8 +37,6 @@ module.exports = (config: any) => {
         secretOrKey: config.JWT_SECRET,
       },
       async (jwtPayload: any, done: any) => {
-        console.log("jwt:", jwtPayload);
-
         try {
           const user = await StaffService.getOne(jwtPayload.userId);
           return done(null, user);

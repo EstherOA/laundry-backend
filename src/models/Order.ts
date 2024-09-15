@@ -7,13 +7,13 @@ const PaymentSchema = mongoose.Schema(
     mode: {
       required: true,
       type: String,
-      enum: ["Momo", "Cash"],
+      enum: ["momo", "cash"],
     },
     amount: {
       required: true,
       type: Number,
     },
-    proofUrl: {
+    receipt: {
       type: String,
     },
     sender: {
@@ -24,7 +24,8 @@ const PaymentSchema = mongoose.Schema(
       type: String,
     },
     processedBy: {
-      type: String,
+      name: { required: true, type: String },
+      staffId: { required: true, type: String },
     },
   },
   {
@@ -35,14 +36,31 @@ const PaymentSchema = mongoose.Schema(
 const OrderSchema = mongoose.Schema(
   {
     items: [ServiceSchema],
-    customer: { required: true, type: mongoose.Schema.Types.ObjectId },
+    customer: {
+      firstName: { required: true, type: String },
+      customerId: { type: String },
+      lastName: { required: true, type: String },
+      phoneNumber: { required: true, type: String },
+      address: { required: true, type: String },
+      deliveryNotes: { type: String },
+      landmark: { required: true, type: String },
+    },
     totalAmount: {
       type: Number,
       required: true,
     },
-    processedBy: { required: true, type: mongoose.Schema.Types.ObjectId },
-    recordedBy: { required: true, type: mongoose.Schema.Types.ObjectId },
-    deliveredBy: { required: true, type: mongoose.Schema.Types.ObjectId },
+    processedBy: {
+      name: { required: true, type: String },
+      staffId: { required: true, type: String },
+    },
+    recordedBy: {
+      name: { required: true, type: String },
+      staffId: { required: true, type: String },
+    },
+    deliveredBy: {
+      name: { type: String },
+      staffId: { type: String },
+    },
     orderDate: {
       type: Date,
       default: Date.now,
@@ -54,12 +72,14 @@ const OrderSchema = mongoose.Schema(
     deliveryDate: {
       type: Date,
     },
-    invoiceId: { type: String, required: true },
-    invoiceUrl: { type: String, required: true },
+    dueDate: {
+      type: Date,
+    },
+    invoiceId: { type: String, required: true, index: { unique: true } },
     payments: [PaymentSchema],
     paymentStatus: {
       type: String,
-      enum: ["Full", "Partial", "None"],
+      enum: ["full", "partial", "none"],
     },
   },
   {

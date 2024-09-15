@@ -23,7 +23,7 @@ class OrderService {
   }
 
   static async addPayment(id: string, data: any) {
-    const order = OrderModel.findById(id).exec();
+    const order = await OrderModel.findById(id).exec();
 
     if (order) {
       order.payments.push(data);

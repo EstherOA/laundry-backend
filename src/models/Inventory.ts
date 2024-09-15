@@ -9,12 +9,12 @@ const InventorySchema = mongoose.Schema(
     purchasedBy: { type: String, required: true },
     vendor: { type: String, required: true },
     datePurchased: { type: Date, required: true },
-    paymentMode: { type: String, enum: ["Momo", "Cash"], required: true },
-    paymentReceipt: { type: String, required: true },
+    paymentMode: { type: String, enum: ["momo", "cash"], required: true },
+    paymentReceipt: { type: String },
     status: {
       type: String,
-      enum: ["InStock", "LowStock", "OutOfStock"],
-      default: "InStock",
+      enum: ["in-stock", "low-stock", "out-of-stock"],
+      default: "in-stock",
     },
   },
   {

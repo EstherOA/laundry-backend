@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const ServiceSchema = mongoose.Schema(
   {
+    serviceId: { type: String, required: true },
     itemName: { type: String, required: true },
-    serviceType: { type: String, required: true },
+    serviceType: { type: String, enum: ["washing", "dry-cleaning", "ironing"] },
     duration: { type: Number, required: true },
     price: { type: Number, required: true },
     description: { type: String },

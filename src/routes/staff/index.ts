@@ -38,6 +38,4 @@ module.exports = () => {
     return res.status(200).send(updated);
   });
   return router;
-
-  //TODO: sanitize and validate and request data
 };
