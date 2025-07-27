@@ -21,7 +21,13 @@ app.set("port", port);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "https://laundry-app-henna.vercel.app/",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use("/", routeHandler(config));
 
 const server = http.createServer(app);
