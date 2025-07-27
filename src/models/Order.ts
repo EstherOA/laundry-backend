@@ -2,8 +2,53 @@ const { ServiceSchema } = require("./Service");
 
 const mongoose = require("mongoose");
 
+// Function to get next order ID
+async function getNextOrderId() {
+  const Order = mongoose.model("Order");
+  const lastOrder = await Order.findOne().sort({ orderId: -1 });
+
+  if (!lastOrder) {
+    return "00001";
+  }
+
+  const lastId = parseInt(lastOrder.orderId, 10);
+  const nextId = lastId + 1;
+  return nextId.toString().padStart(5, "0");
+}
+
+// Function to get next payment ID
+async function getNextPaymentId() {
+  const Order = mongoose.model("Order");
+  const lastOrder = await Order.findOne({
+    "payments.paymentId": { $exists: true },
+  }).sort({ "payments.paymentId": -1 });
+
+  if (!lastOrder || !lastOrder.payments || lastOrder.payments.length === 0) {
+    return "00001";
+  }
+
+  // Find the highest payment ID across all orders
+  const allPayments = await Order.aggregate([
+    { $unwind: "$payments" },
+    { $sort: { "payments.paymentId": -1 } },
+    { $limit: 1 },
+  ]);
+
+  if (allPayments.length === 0) {
+    return "00001";
+  }
+
+  const lastId = parseInt(allPayments[0].payments.paymentId, 10);
+  const nextId = lastId + 1;
+  return nextId.toString().padStart(5, "0");
+}
+
 const PaymentSchema = mongoose.Schema(
   {
+    paymentId: {
+      type: String,
+      unique: true,
+    },
     mode: {
       required: true,
       type: String,
@@ -35,6 +80,10 @@ const PaymentSchema = mongoose.Schema(
 
 const OrderSchema = mongoose.Schema(
   {
+    orderId: {
+      type: String,
+      unique: true,
+    },
     items: [ServiceSchema],
     customer: {
       firstName: { required: true, type: String },
@@ -86,5 +135,29 @@ const OrderSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Pre-save hook for PaymentSchema
+PaymentSchema.pre("save", async function (this: any, next: any) {
+  if (!this.paymentId) {
+    try {
+      this.paymentId = await getNextPaymentId();
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
+});
+
+// Pre-save hook for OrderSchema
+OrderSchema.pre("save", async function (this: any, next: any) {
+  if (!this.orderId) {
+    try {
+      this.orderId = await getNextOrderId();
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
+});
 
 module.exports = mongoose.model("Order", OrderSchema);
