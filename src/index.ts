@@ -16,6 +16,12 @@ const connectToMongoose = async () => {
   return mongoose.connect(config.mongodb.url);
 };
 
+const allowedOrigins = [
+  "https://laundry-app-henna.vercel.app",
+  "https://laundry-app-p42d.onrender.com",
+  process.env.NODE_ENV === "development" ? "*" : "",
+];
+
 const port = process.env.PORT || "3000";
 app.set("port", port);
 app.use(bodyParser.json());
@@ -23,7 +29,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(
   cors({
-    origin: "https://laundry-app-henna.vercel.app",
+    origin: function (
+      origin: string,
+      callback: (err?: Error | null, allow?: boolean) => void
+    ) {
+      // Check if the requesting origin is in the allowedOrigins array
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true); // Allow the origin
+      } else {
+        callback(new Error("Not allowed by CORS")); // Deny the origin
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
